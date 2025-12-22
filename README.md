@@ -20,6 +20,38 @@ Given clinical attributes such as age, cholesterol level, blood pressure, and EC
 
 ---
 
+## Project Structure
+```
+mlops-uci-heart-disease/
+├── data/
+│ └── raw/
+│ └── heart.csv
+├── notebooks/
+│ └── 01_eda.ipynb
+├── src/
+│ ├── data/
+│ │ └── download_data.py
+│ ├── features/
+│ ├── models/
+│ │ └── train.py
+│ └── utils/
+├── tests/
+│ └── test_model.py
+├── app/
+│ └── main.py
+├── artifacts/
+│ ├── model.pkl
+│ └── scaler.pkl
+├── .github/
+│ └── workflows/
+│ └── ci.yml
+├── Dockerfile
+├── requirements.txt
+└── README.md
+```
+
+---
+
 ## Author
 - **Name:** Moulik Dayal
 - **Roll No:** 2024AA05811
