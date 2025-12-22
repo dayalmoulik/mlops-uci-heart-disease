@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import numpy as np
 
+#For Model training and evaluation
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -11,6 +12,11 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import pickle
 from xgboost import XGBClassifier
 
+#For Experiment tracking
+import mlflow
+import mlflow.sklearn
+
+#Suppressing warnings
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -19,6 +25,9 @@ DATA_PATH = "data/raw/heart.csv"
 ARTIFACT_PATH = "artifacts"
 
 os.makedirs(ARTIFACT_PATH, exist_ok=True)
+
+# Setting up MLflow experiment
+mlflow.set_experiment("Heart Disease Prediction")
 
 # Loading the dataset
 data = pd.read_csv(DATA_PATH)
@@ -45,58 +54,82 @@ X_test = scaler.transform(X_test)
 with open(os.path.join(ARTIFACT_PATH, "scaler.pkl"), "wb") as f:
     pickle.dump(scaler, f)
 
+# Function to run experiments with MLflow
+def log_experiment(model, model_name, X_train, y_train, X_test, y_test,scaled=False,scaler=None):
+    with mlflow.start_run(run_name=model_name):
+        #Log params
+        mlflow.log_param("model", model_name)
+        for key, value in model.get_params().items():
+            mlflow.log_param(key, value)
+
+        #Train the model
+        if scaled and scaler is not None:
+            X_train = scaler.transform(X_train)
+            X_test = scaler.transform(X_test)
+        else:
+            X_train = X_train
+            X_test = X_test
+
+        model.fit(X_train, y_train)
+        
+        # Predictions and probabilities
+        y_pred = model.predict(X_test)
+        y_probs = model.predict_proba(X_test)[:, 1]
+
+        # Evaluation Metrics
+        accuracy = accuracy_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred)
+        recall = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred)
+        roc_auc = roc_auc_score(y_test, y_probs)
+
+        # Log metrics
+        mlflow.log_metric("accuracy", accuracy)
+        mlflow.log_metric("precision", precision)
+        mlflow.log_metric("recall", recall)
+        mlflow.log_metric("f1_score", f1)
+        mlflow.log_metric("roc_auc", roc_auc)
+
+        # Log the model
+        mlflow.sklearn.log_model(model, "model")
+
+        print(f"Logged {model_name} to MLflow")
+        
+        return roc_auc_score(y_test, y_probs)
 # Model Training
 # Model 1: Logistic Regression
-lr_model = LogisticRegression(random_state=42)
-lr_model.fit(X_train, y_train)
+lr_model = LogisticRegression(max_iter=1000, random_state=42)
 
-lr_pred = lr_model.predict(X_test)
-lr_probs = lr_model.predict_proba(X_test)[:, 1]
+lr_auc = log_experiment(lr_model, "Logistic Regression", X_train, y_train, X_test, y_test, 
+                        scaled=True, scaler=scaler)
 
 # Model 2: Random Forest
 rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
-rf_model.fit(X_train, y_train)
 
-rf_pred = rf_model.predict(X_test)
-rf_probs = rf_model.predict_proba(X_test)[:, 1]
+rf_auc = log_experiment(rf_model, "Random Forest", X_train, y_train, X_test, y_test)
 
 # Model 3: XGBoost
-xgb_model = XGBClassifier(random_state=42)
-xgb_model.fit(X_train, y_train)
+xgb_model = XGBClassifier(n_estimators=300, random_state=42)
 
-xgb_pred = xgb_model.predict(X_test)
-xgb_probs = xgb_model.predict_proba(X_test)[:, 1]
+xgb_auc = log_experiment(xgb_model, "XGBoost", X_train, y_train, X_test, y_test)
 
-# Evaluating Models
-def evaluate_model(name,y_true, y_pred, y_probs):
-    print(f"Evaluating {name}...")
-    accuracy = accuracy_score(y_true, y_pred)
-    precision = precision_score(y_true, y_pred)
-    recall = recall_score(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred)
-    roc_auc = roc_auc_score(y_true, y_probs)
-    if name == "Logistic Regression":
-        model = lr_model
-    elif name == "Random Forest":
-        model = rf_model
-    else:
-        model = xgb_model
-    cross_val_scores = cross_val_score(model, X_train, y_train, cv=5)
-    print(f"Accuracy: {accuracy:.4f}")
-    print(f"Precision: {precision:.4f}")    
-    print(f"Recall: {recall:.4f}")
-    print(f"F1 Score: {f1:.4f}")
-    print(f"ROC AUC: {roc_auc:.4f}")
-    print(f"Cross-Validation Scores: {cross_val_scores}")
-    print(f"Mean CV Score: {cross_val_scores.mean():.4f}")
-    print("-" * 30)
+# Selecting the best model based on ROC-AUC
+model_aucs = {  
+    "Logistic Regression": lr_auc,
+    "Random Forest": rf_auc,
+    "XGBoost": xgb_auc
+}
 
-evaluate_model("Logistic Regression", y_test, lr_pred, lr_probs)
-evaluate_model("Random Forest", y_test, rf_pred, rf_probs)
-evaluate_model("XGBoost", y_test, xgb_pred, xgb_probs)
+best_model_name = max(model_aucs, key=model_aucs.get)
+print(f"Best Model: {best_model_name} with ROC-AUC: {model_aucs[best_model_name]}")
 
+# Retrieving the best model instance
+BEST_MODEL = {
+    "Logistic Regression": lr_model,
+    "Random Forest": rf_model,
+    "XGBoost": xgb_model
+}[best_model_name]
 
 # Saving the best model
 with open(os.path.join(ARTIFACT_PATH, "model.pkl"), "wb") as f:
-    pickle.dump(rf_model, f)
-
+    pickle.dump(BEST_MODEL, f)
