@@ -5,8 +5,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 # pickle files for model and scaler
-MODEL_PATH = 'artifacts\model.pkl'
-SCALER_PATH = 'artifacts\scaler.pkl'
+MODEL_PATH = 'artifacts/model.pkl'
+SCALER_PATH = 'artifacts/scaler.pkl'
 
 # Load the pre-trained model & scaler
 with open(MODEL_PATH, 'rb') as model_file:
