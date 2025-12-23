@@ -23,31 +23,86 @@ Given clinical attributes such as age, cholesterol level, blood pressure, and EC
 ## Project Structure
 ```
 mlops-uci-heart-disease/
-├── data/
-│ └── raw/
-│ └── heart.csv
-├── notebooks/
-│ └── 01_eda.ipynb
-├── src/
-│ ├── data/
-│ │ └── download_data.py
-│ ├── features/
-│ ├── models/
-│ │ └── train.py
-│ └── utils/
-├── tests/
-│ └── test_model.py
-├── app/
-│ └── main.py
-├── artifacts/
-│ ├── model.pkl
-│ └── scaler.pkl
-├── .github/
-│ └── workflows/
-│ └── ci.yml
-├── Dockerfile
-├── requirements.txt
-└── README.md
+│   .dockerignore
+│   .gitignore
+│   Dockerfile
+│   LICENSE
+│   mlflow.db
+│   README.md
+│   requirements.txt
+│
+├───.github
+│   └───workflows
+├───app
+│   │   main.py
+│   │
+│   └───__pycache__
+│           main.cpython-310.pyc
+│
+├───artifacts
+│       model.pkl
+│       scaler.pkl
+│
+├───data
+│   └───raw
+│           heart.csv
+│
+├───helm
+│   └───heart-disease
+│       │   .helmignore
+│       │   Chart.yaml
+│       │   values.yaml
+│       │
+│       ├───charts
+│       └───templates
+│               deployment.yaml
+│               service.yaml
+│
+├───k8s
+│       deployment.yaml
+│       ingress.yaml
+│       service.yaml
+│
+├───mlruns
+│   └───1
+│       └───models
+│           ├───m-3a5314de0cbb4d66ba3d9d8ffaf614c5
+│           │   └───artifacts
+│           │           conda.yaml
+│           │           MLmodel
+│           │           model.pkl
+│           │           python_env.yaml
+│           │           requirements.txt
+│           │
+│           ├───m-86f2ea915dfa4cd38060c13d638bc360
+│           │   └───artifacts
+│           │           conda.yaml
+│           │           MLmodel
+│           │           model.pkl
+│           │           python_env.yaml
+│           │           requirements.txt
+│           │
+│           └───m-c05e2439b78a45a4855166db3eae3f40
+│               └───artifacts
+│                       conda.yaml
+│                       MLmodel
+│                       model.pkl
+│                       python_env.yaml
+│                       requirements.txt
+│
+├───notebooks
+│       01_EDA.ipynb
+│
+├───src
+│   ├───data
+│   │       download_data.py
+│   │
+│   ├───features
+│   ├───models
+│   │       train.py
+│   │
+│   └───utils
+└───tests
 ```
 
 ---
