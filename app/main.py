@@ -2,6 +2,7 @@
 import pickle
 import numpy as np
 from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 import logging
 import time
@@ -89,14 +90,19 @@ def predict_heart_disease(input_data: HeartDiseaseInput):
     }
 
 # Metrics Endpoint
-@app.get("/metrics")
+@app.get("/metrics", response_class = PlainTextResponse)
 def metrics():
     avg_latency = (
         TOTAL_PREDICTION_TIME/REQUEST_COUNT 
         if REQUEST_COUNT > 0 else 0
     )
 
-    return {
-        "total_requests": REQUEST_COUNT,
-        "average_latency_seconds": round(avg_latency, 4)
-    }
+    return f"""
+    # HELP api_requests_total Total number of prediction requests
+    # TYPE api_requests_total counter
+    api_requests_total {REQUEST_COUNT}
+
+    # HELP api_average_latency_seconds Average prediction latency
+    # TYPE api_average_latency_seconds gauge
+    api_average_latency_seconds {avg_latency}
+    """
