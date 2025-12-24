@@ -28,11 +28,24 @@ mlops-uci-heart-disease/
 │   Dockerfile
 │   LICENSE
 │   mlflow.db
+│   prometheus.yml
 │   README.md
 │   requirements.txt
 │
 ├───.github
 │   └───workflows
+│           ci.yml
+│
+├───.pytest_cache
+│   │   .gitignore
+│   │   CACHEDIR.TAG
+│   │   README.md
+│   │
+│   └───v
+│       └───cache
+│               lastfailed
+│               nodeids
+│
 ├───app
 │   │   main.py
 │   │
@@ -103,6 +116,12 @@ mlops-uci-heart-disease/
 │   │
 │   └───utils
 └───tests
+    │   test_data.py
+    │   test_model.py
+    │
+    └───__pycache__
+            test_data.cpython-310-pytest-9.0.2.pyc
+            test_model.cpython-310-pytest-9.0.2.pyc
 ```
 
 ---
