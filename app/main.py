@@ -79,12 +79,12 @@ def predict_heart_disease(input_data: HeartDiseaseInput):
     logger.info(
         f"Prediction completed"
         f"Prediction: {prediction}"
-        f"Probability: {prediction_proba:.4f}, Time taken: {elapsed_time:.4f} seconds")    
+        f"Confidence: {prediction_proba:.4f}, Time taken: {elapsed_time:.4f} seconds")    
   
     # Return the prediction result
     return {
         "prediction": int(prediction),
-        "probability": round(float(prediction_proba),4),
+        "Confidence": round(float(prediction_proba),4),
         "latency_seconds": round(elapsed_time, 4)
     }
 
