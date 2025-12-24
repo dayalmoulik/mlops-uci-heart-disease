@@ -126,6 +126,272 @@ mlops-uci-heart-disease/
 
 ---
 
+## 4. Setup Instructions
+
+### 4.1 Clone Repository
+
+```
+bash
+	git clone <repository-url>
+	cd mlops-uci-heart-disease
+```
+
+### 4.2 Install Dependencies
+
+```
+bash
+	pip install -r requirements.txt
+```
+
+---
+
+## 5. Data Acquisition & EDA
+
+### Download Dataset
+```
+bash
+python src/data/download_data.py
+```
+
+### Exploratory Data Analysis
+
+EDA is performed in:
+
+```
+notebooks/01_eda.ipynb
+```
+
+Includes:
+
+- Missing value analysis
+
+- Feature distributions
+
+- Class balance
+
+- Correlation heatmap
+
+---
+
+## 6. Feature Engineering & Model Training
+
+### Models implemented:
+
+- Logistic Regression
+
+- Random Forest
+
+- XGBoost
+
+Training script:
+
+```
+python src/models/train.py
+```
+
+Artifacts generated:
+- artifacts/model.pkl
+
+- artifacts/scaler.pkl
+
+---
+
+## 7. Experiment Tracking (MLflow)
+
+MLflow is used to track:
+
+- Model parameters
+
+- Evaluation metrics
+
+- Trained models
+
+### Start MLflow UI
+
+```
+mlflow ui
+```
+
+Access:
+
+```
+http://127.0.0.1:5000
+```
+---
+
+## 8. Unit Testing
+
+Unit tests are written using Pytest.
+
+### Run tests:
+
+```
+pytest
+```
+
+Tests cover:
+
+- Data availability and schema
+
+- Model artifact creation
+
+- Model loading
+
+---
+
+## 9. CI/CD Pipeline
+
+CI pipeline is implemented using **GitHub Actions**.
+
+Pipeline steps:
+
+- Dependency installation
+
+- Linting
+
+- Unit testing
+
+- Model training
+
+- Artifact upload per workflow run
+
+Workflow file:
+
+```
+.github/workflows/ci.yml
+```
+---
+
+## 10. FastAPI Inference API
+
+### Run locally
+
+```
+uvicorn app.main:app --reload
+```
+Available Endpoints
+- / – Health check
+
+- /predict – Model inference
+
+- /metrics – Monitoring metrics (Prometheus compatible)
+
+Swagger UI:
+
+arduino
+```
+http://127.0.0.1:8000/docs
+```
+
+---
+
+## 11. Docker Containerization
+
+### Build Image
+
+```
+docker build -t heart-disease-api .
+```
+
+### Run Container
+
+```
+docker run -p 8000:8000 heart-disease-api
+```
+
+---
+
+## 12. Kubernetes Deployment
+
+### Apply manifests
+
+```
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+```
+
+### Access API
+Docker Desktop: http://localhost/docs
+
+Minikube:
+
+```
+minikube service heart-disease-service
+```
+---
+
+## 13. Helm Deployment (Alternative)
+
+### Install Helm chart
+
+```
+helm install heart-api helm/heart-disease
+```
+
+### Verify
+
+```
+helm list
+kubectl get pods
+kubectl get services
+```
+
+---
+
+## 14. Monitoring & Logging
+
+### Logging
+- Structured logging implemented in FastAPI
+- Logs accessible via:
+
+```
+docker logs <container-id>
+kubectl logs <pod-name>
+```
+
+### Monitoring
+- /metrics endpoint exposes:
+
+	- Total request count
+
+	- Average prediction latency
+
+- Prometheus scrapes metrics
+
+- Grafana visualizes metrics using dashboards
+
+---
+
+## 15. Production Readiness
+- Reproducible environment using requirements.txt
+
+- Containerized deployment
+
+- Automated CI pipeline
+
+- Scalable Kubernetes setup
+
+- Monitoring and logging enabled
+
+---
+
+## 16. Deliverables
+
+- GitHub repository with full source code
+
+- CI/CD pipeline with artifacts
+
+- Docker image and Kubernetes manifests
+
+- Helm chart
+
+- Monitoring setup
+
+- Final report and screenshots
+
+---
+
+
 ## Author
 - **Name:** Moulik Dayal
 - **Roll No:** 2024AA05811
