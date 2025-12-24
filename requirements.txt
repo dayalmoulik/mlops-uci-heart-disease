@@ -25,5 +25,8 @@ mlflow==3.8.0
 fastapi
 uvicorn
 
+# For Testing
+pytest
+
 # Optional (remove if not used)
 flask==3.0.3
