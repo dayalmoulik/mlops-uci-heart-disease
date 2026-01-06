@@ -51,7 +51,7 @@ class HeartDiseaseInput(BaseModel):
 @app.get("/")
 def health_check():
     logger.info("Health check requested")
-    return {"status": "API is running"}
+    return {"status": "API version 2 is running"}
 
 # Prediction Endpoint
 @app.post("/predict")
@@ -71,8 +71,8 @@ def predict_heart_disease(input_data: HeartDiseaseInput):
     scaled_data = scaler.transform(input_array)
 
     # Make prediction
-    prediction = model.predict(scaled_data)
-    prediction_proba = model.predict_proba(scaled_data)[0][1]
+    prediction = model.predict(scaled_data)[0]
+    prediction_proba = model.predict_proba(scaled_data)[0][prediction]
 
     elapsed_time = time.time() - start_time
     TOTAL_PREDICTION_TIME += elapsed_time

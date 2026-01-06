@@ -375,22 +375,6 @@ kubectl logs <pod-name>
 
 ---
 
-## 16. Deliverables
-
-- GitHub repository with full source code
-
-- CI/CD pipeline with artifacts
-
-- Docker image and Kubernetes manifests
-
-- Helm chart
-
-- Monitoring setup
-
-- Final report and screenshots
-
----
-
 
 ## Author
 - **Name:** Moulik Dayal
